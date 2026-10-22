@@ -1,0 +1,412 @@
+/* ════════════════════════════════════════════════════════════
+   serverhub.css — Styles de la page hub principale
+   Structure + Toolbar + Sections par type + Toasts
+   ════════════════════════════════════════════════════════════ */
+
+/* ── SECTION PRINCIPALE ── */
+.mc-main {
+  padding: 40px 0;
+}
+
+.section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* ── TOOLBAR ── */
+.mc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.mc-toolbar__search {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, #e0d9d0);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.mc-toolbar__search svg {
+  color: var(--muted, #7a7168);
+  flex-shrink: 0;
+}
+
+.mc-toolbar__search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--accent, #3b3028);
+  outline: none;
+}
+
+.mc-toolbar__search input::placeholder {
+  color: var(--muted, #7a7168);
+}
+
+/* ── FILTRES ── */
+.mc-toolbar__filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mc-filter {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--line, #e0d9d0);
+  background: var(--surface, #ffffff);
+  color: var(--muted, #7a7168);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.mc-filter:hover {
+  background: var(--bg, #f5f2ee);
+}
+
+.mc-filter.active {
+  background: var(--accent, #3b3028);
+  color: #f5f2ee;
+  border-color: var(--accent, #3b3028);
+}
+
+/* ── BOUTONS PRINCIPAUX ── */
+.mc-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: 1px solid var(--line, #e0d9d0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mc-btn:active {
+  transform: scale(0.97);
+}
+
+.mc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.mc-btn--gold {
+  background: var(--accent, #3b3028);
+  color: #f5f2ee;
+  border-color: var(--accent, #3b3028);
+}
+
+.mc-btn--gold:hover:not(:disabled) {
+  background: #2a2118;
+}
+
+.mc-btn.loading svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ════════════════════════════════════════════════════════════
+   SECTIONS PAR TYPE DE SERVEUR
+   ════════════════════════════════════════════════════════════ */
+
+.server-type-section {
+  margin-bottom: 48px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.server-type-section.hidden {
+  display: none;
+}
+
+/* ── EN-TÊTE DE SECTION ── */
+.server-type-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--line, #e0d9d0);
+}
+
+.server-type-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent, #3b3028);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.server-type-title svg {
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.server-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted, #7a7168);
+  background: var(--bg, #f5f2ee);
+  padding: 4px 12px;
+  border-radius: 20px;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* ── GRILLE DE CARTES ── */
+.mc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+/* Variantes de grille par type (pour des layouts spécifiques plus tard) */
+.minecraft-grid {
+  /* Peut être personnalisée pour Minecraft */
+}
+
+.palworld-grid {
+  /* Peut être personnalisée pour Palworld */
+}
+
+.generic-grid {
+  /* Peut être personnalisée pour les serveurs génériques */
+}
+
+/* ── ÉTAT VIDE PAR SECTION ── */
+.mc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: var(--muted, #7a7168);
+  background: var(--bg, #f5f2ee);
+  border-radius: 8px;
+  border: 1px dashed var(--line, #e0d9d0);
+  text-align: center;
+}
+
+.mc-empty p {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.mc-empty.hidden {
+  display: none;
+}
+
+/* ── ÉTAT VIDE GLOBAL ── */
+.mc-empty-global {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  color: var(--muted, #7a7168);
+  text-align: center;
+}
+
+.mc-empty-global svg {
+  color: var(--muted, #7a7168);
+  opacity: 0.5;
+}
+
+.mc-empty-global p {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.mc-empty-global.hidden {
+  display: none;
+}
+
+/* ════════════════════════════════════════════════════════════
+   TOASTS (NOTIFICATIONS)
+   ════════════════════════════════════════════════════════════ */
+
+.mc-toasts {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.mc-toast {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Outfit', sans-serif;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(58, 48, 40, 0.12);
+  min-width: 250px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ── Variantes de toasts ── */
+.mc-toast--info {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+.mc-toast--success {
+  background: #e6f5ec;
+  color: #1f7a40;
+  border: 1px solid #a8ddb8;
+}
+
+.mc-toast--error {
+  background: #fdecea;
+  color: #992b22;
+  border: 1px solid #f5b4ae;
+}
+
+.mc-toast--warning {
+  background: #fef7e6;
+  color: #9a6c0a;
+  border: 1px solid #f5d88a;
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .mc-toolbar {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .mc-toolbar__search {
+    min-width: 100%;
+  }
+
+  .mc-toolbar__filters {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .mc-filter {
+    flex: 1;
+    text-align: center;
+  }
+
+  .mc-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .server-type-section {
+    margin-bottom: 32px;
+  }
+
+  .server-type-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .mc-toasts {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .mc-toast {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .mc-toolbar {
+    gap: 8px;
+  }
+
+  .mc-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .server-type-title {
+    font-size: 18px;
+    gap: 8px;
+  }
+
+  .server-type-title svg {
+    width: 18px;
+    height: 18px;
+  }
+}

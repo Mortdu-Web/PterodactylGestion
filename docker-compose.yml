@@ -1,0 +1,29 @@
+services:
+  server-hub:
+    build:
+      context: .
+      args:
+        # true en production (AUTH_ENABLED=true) pour installer auth-client
+        WITH_AUTH: ${WITH_AUTH:-false}
+    container_name: server-hub
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${PORT:-5000}:${PORT:-5000}"
+    volumes:
+      # Données persistantes (minijeu actif)
+      - server-hub-data:/data
+      # Clé privée SSH vers la VM Wings (module minijeux), en lecture seule.
+      # MINIGAME_VM_SSH_KEY_PATH doit valoir /run/secrets/minigame_ssh_key dans le .env
+      - ${MINIGAME_VM_SSH_KEY_HOST_PATH:?chemin de la clé SSH sur l'hôte (voir .env.example)}:/run/secrets/minigame_ssh_key:ro
+    networks:
+      - web
+
+volumes:
+  server-hub-data:
+
+networks:
+  # Réseau partagé avec le reverse proxy et le service d'auth.
+  # À créer une fois : docker network create web
+  web:
+    external: true

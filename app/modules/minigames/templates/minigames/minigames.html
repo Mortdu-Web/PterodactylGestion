@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Serveur minijeux{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('minigames.static', filename='css/serveurMinijeux.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="minijeux-server">
+  <div class="minijeux-server__header">
+    <h1>Serveur minijeux</h1>
+    <p>Choisis le minijeu Minecraft actif sur le serveur. Le switch remplace la map et redémarre la bonne version du jar.</p>
+  </div>
+
+  <div class="minijeux-current">
+    <span class="minijeux-current__dot"></span>
+    <div>
+      <div class="minijeux-current__label">Minijeu actif</div>
+      <div class="minijeux-current__name" id="minijeux-current-name">—</div>
+    </div>
+  </div>
+
+  <div id="minijeux-state" class="minijeux-server__loading"></div>
+
+  <div id="minijeux-grid" class="minijeux-grid"></div>
+
+  <pre id="minijeux-console" class="minijeux-console"></pre>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const LISTE_URL  = "{{ url_for('minigames.api_liste_minijeux') }}";
+  const SWITCH_URL = "{{ url_for('minigames.api_switch_minijeu') }}";
+</script>
+<script src="{{ url_for('minigames.static', filename='js/serverMinijeux.js') }}"></script>
+{% endblock %}

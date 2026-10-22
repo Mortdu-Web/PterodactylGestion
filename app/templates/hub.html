@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Server Hub{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('serverhub.static', filename='css/serverhub.css') }}">
+<link rel="stylesheet" href="{{ url_for('serverhub.static', filename='css/server-cards/minecraftServerCard.css') }}">
+<link rel="stylesheet" href="{{ url_for('serverhub.static', filename='css/server-cards/palworldServerCard.css') }}">
+<link rel="stylesheet" href="{{ url_for('serverhub.static', filename='css/server-cards/genericServerCard.css') }}">
+{% endblock %}
+
+{% block head_scripts %}
+{# Racine du hub vue par le navigateur (préfixe inclus) : les scripts n'ont aucun chemin codé en dur. #}
+<script>window.SERVERHUB = {{ {'base': url_for('serverhub.hub')}|tojson }};</script>
+{% endblock %}
+
+{% block content %}
+<section class="mc-main section">
+  <div class="mc-toolbar">
+    <div class="mc-toolbar__search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="search-input" placeholder="Rechercher un serveur…">
+    </div>
+    <div class="mc-toolbar__filters">
+      <button class="mc-filter active" data-filter="all">Tous</button>
+      <button class="mc-filter" data-filter="running">En ligne</button>
+      <button class="mc-filter" data-filter="offline">Hors ligne</button>
+      <button class="mc-filter" data-filter="starting">Démarrage</button>
+    </div>
+    <button class="mc-btn mc-btn--gold" id="refresh-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Actualiser
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- MINECRAFT SERVERS SECTION                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="server-type-section" id="minecraft-section">
+    <div class="server-type-header">
+      <h2 class="server-type-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 3h2v2H3zm3 0h2v2H6zm3 0h2v2H9zm3 0h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zM3 6h2v2H3zm12 0h2v2h-2zm3 0h2v2h-2zM3 9h2v2H3zm3 0h2v2H6zm3 0h2v2H9zm3 0h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zM3 12h2v2H3zm12 0h2v2h-2zm3 0h2v2h-2zM3 15h2v2H3zm3 0h2v2H6zm3 0h2v2H9zm3 0h2v2h-2zm3 0h2v2h-2zm3 0h2v2h-2zM3 18h2v2H3zm12 0h2v2h-2zm3 0h2v2h-2z"/>
+        </svg>
+        Minecraft
+      </h2>
+      <span class="server-count" id="minecraft-count">0</span>
+    </div>
+    <div class="mc-grid minecraft-grid" id="minecraft-grid">
+      <!-- Les cartes Minecraft sont injectées ici -->
+    </div>
+    <div class="mc-empty hidden" id="minecraft-empty">
+      <p>Aucun serveur Minecraft</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PALWORLD SERVERS SECTION                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="server-type-section" id="palworld-section">
+    <div class="server-type-header">
+      <h2 class="server-type-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="10"/><path d="M8 10c-1 0-1.5 1-1.5 2s.5 2 1.5 2m8 0c1 0 1.5-1 1.5-2s-.5-2-1.5-2" stroke="currentColor" stroke-width="2" fill="none"/>
+        </svg>
+        Palworld
+      </h2>
+      <span class="server-count" id="palworld-count">0</span>
+    </div>
+    <div class="mc-grid palworld-grid" id="palworld-grid">
+      <!-- Les cartes Palworld sont injectées ici -->
+    </div>
+    <div class="mc-empty hidden" id="palworld-empty">
+      <p>Aucun serveur Palworld</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- GENERIC/OTHER SERVERS SECTION              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="server-type-section" id="generic-section">
+    <div class="server-type-header">
+      <h2 class="server-type-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        Autres serveurs
+      </h2>
+      <span class="server-count" id="generic-count">0</span>
+    </div>
+    <div class="mc-grid generic-grid" id="generic-grid">
+      <!-- Les cartes Generic sont injectées ici -->
+    </div>
+    <div class="mc-empty hidden" id="generic-empty">
+      <p>Aucun autre serveur</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- GLOBAL EMPTY STATE                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="mc-empty-global hidden" id="empty-state-global">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <line x1="8" y1="21" x2="16" y2="21"/>
+      <line x1="12" y1="17" x2="12" y2="21"/>
+    </svg>
+    <p>Aucun serveur trouvé</p>
+  </div>
+</section>
+
+<div class="mc-toasts" id="toasts"></div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('serverhub.static', filename='js/minecraftServerCard.js') }}"></script>
+<script type="module" src="{{ url_for('serverhub.static', filename='js/palworldServerCard.js') }}"></script>
+<script type="module" src="{{ url_for('serverhub.static', filename='js/genericServerCard.js') }}"></script>
+<script type="module" src="{{ url_for('serverhub.static', filename='js/hub.js') }}"></script>
+{% endblock %}
