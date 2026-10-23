@@ -23,7 +23,8 @@ class Config:
     URL_PREFIX = os.getenv("URL_PREFIX", "").rstrip("/")
     PUBLIC_URL = os.getenv("PUBLIC_URL", "http://localhost:5000").rstrip("/")
     BEHIND_PROXY = _bool("BEHIND_PROXY", False)
-
+    # Lien « Retour au hub » (URL publique de hub-app). Vide = pas de lien.
+    HUB_APP_URL = os.getenv("HUB_APP_URL", "").strip()
     # Dossier des données persistantes de l'application (volume Docker monté sur /data).
     DATA_DIR = os.getenv("DATA_DIR", "data")
 
