@@ -23,10 +23,6 @@ else:
         return decorator
 
 
-def require_access():
-    """Accès à la gestion des serveurs : les rôles de AUTH_REQUIRED_ROLES, ou tout utilisateur connecté."""
-    return require_auth(*Config.AUTH_REQUIRED_ROLES)
-
 
 def api_route(f):
     """Décorateur : transforme les exceptions (Pterodactyl, réseau...) en réponses JSON propres."""

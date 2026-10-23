@@ -20,7 +20,7 @@ from flask import Blueprint, abort, jsonify, redirect, render_template, request,
 
 from .backend.manager import ServerManager
 from .config import Config
-from .helpers import api_route, require_access
+from .helpers import api_route, require_auth
 
 bp = Blueprint("serverhub", __name__, static_folder="static", static_url_path="/static")
 
@@ -32,14 +32,14 @@ _ALLOWED_SIGNALS = {"start", "stop", "restart", "kill"}
 # ══════════════════════════════════════════════════════════════
 
 @bp.route("/")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 def hub():
     """Hub principal : liste de tous les serveurs (Minecraft, Palworld, ...)."""
     return render_template("hub.html")
 
 
 @bp.route("/<server_id>")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 def server_detail(server_id: str):
     """Page de détail d'un serveur.
 
@@ -58,7 +58,7 @@ def server_detail(server_id: str):
 # ══════════════════════════════════════════════════════════════
 
 @bp.get("/api/getServers")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def get_servers():
     return jsonify(ServerManager.get_servers())
@@ -69,21 +69,21 @@ def get_servers():
 # ══════════════════════════════════════════════════════════════
 
 @bp.get("/api/servers/<server_id>")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def get_server_info(server_id: str):
     return jsonify(ServerManager.get_server(server_id).get_info())
 
 
 @bp.get("/api/servers/<server_id>/resources")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def get_server_resources(server_id: str):
     return jsonify(ServerManager.get_server(server_id).get_resources())
 
 
 @bp.post("/api/servers/<server_id>/power")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def power_server(server_id: str):
     """Body attendu : {"signal": "start" | "stop" | "restart" | "kill"}"""
@@ -98,21 +98,21 @@ def power_server(server_id: str):
 
 
 @bp.get("/api/servers/<server_id>/allocations")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def get_server_allocations(server_id: str):
     return jsonify(ServerManager.get_server(server_id).get_allocations())
 
 
 @bp.get("/api/servers/<server_id>/backups")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def get_server_backups(server_id: str):
     return jsonify(ServerManager.get_server(server_id).get_backups())
 
 
 @bp.post("/api/servers/<server_id>/backups")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def create_server_backup(server_id: str):
     return jsonify(ServerManager.get_server(server_id).create_backup())
@@ -124,7 +124,7 @@ def create_server_backup(server_id: str):
 # ══════════════════════════════════════════════════════════════
 
 @bp.post("/api/start")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def start_server():
     server_id = (request.get_json(silent=True) or {}).get("id")
@@ -135,7 +135,7 @@ def start_server():
 
 
 @bp.post("/api/stop")
-@require_access()
+@require_auth("admin", "ServersUses-Access")
 @api_route
 def stop_server():
     server_id = (request.get_json(silent=True) or {}).get("id")
