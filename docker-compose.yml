@@ -13,11 +13,18 @@ services:
     volumes:
       # Données persistantes (minijeu actif)
       - server-hub-data:/data
-      # Clé privée SSH vers la VM Wings (module minijeux), en lecture seule.
-      # MINIGAME_VM_SSH_KEY_PATH doit valoir /run/secrets/minigame_ssh_key dans le .env
-      - ${MINIGAME_VM_SSH_KEY_HOST_PATH:?chemin de la clé SSH sur l'hôte (voir .env.example)}:/run/secrets/minigame_ssh_key:ro
+    # Clé privée SSH vers la VM Wings (module minijeux), disponible dans /run/secrets/minigame_ssh_key.
+    # MINIGAME_VM_SSH_KEY_PATH doit valoir /run/secrets/minigame_ssh_key dans le .env.
+    # Contrairement à un montage de fichier simple, un secret absent fait ÉCHOUER « docker compose up »
+    # au lieu que Docker crée un dossier à la place (erreur « [Errno 21] Is a directory »).
+    secrets:
+      - minigame_ssh_key
     networks:
       - web
+
+secrets:
+  minigame_ssh_key:
+    file: ${MINIGAME_VM_SSH_KEY_HOST_PATH:?chemin de la clé SSH sur l'hôte (voir .env.example)}
 
 volumes:
   server-hub-data:

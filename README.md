@@ -64,10 +64,19 @@ Le switch de map se fait en SSH sur la VM Wings (`changeMap.sh`, via `sudo` rest
 
 La clé privée SSH est montée dans le conteneur en lecture seule. Le conteneur tourne avec l'uid **10001** :
 ```bash
-mkdir -p secrets && cp ~/.ssh/minigame_deploy secrets/minigame_ssh_key
-sudo chown 10001 secrets/minigame_ssh_key && chmod 400 secrets/minigame_ssh_key
+mkdir -p secrets
+cp ~/.ssh/minigame_deploy secrets/minigame_ssh_key
+chmod 400 secrets/minigame_ssh_key          # chmod AVANT chown : après, l'utilisateur de l'hôte n'a plus la main
+sudo chown 10001 secrets/minigame_ssh_key
+stat -c '%F' secrets/minigame_ssh_key       # doit afficher « regular file »
 ```
 (`MINIGAME_VM_SSH_KEY_HOST_PATH` dans le `.env` pointe vers ce fichier.)
+
+⚠️ Le dossier `secrets/` n'est pas versionné : à refaire après chaque nouveau `git clone`, **avant** `docker compose up`.
+La clé est fournie au conteneur comme secret Docker : si le fichier manque, `docker compose up` s'arrête avec une erreur.
+
+Dépannage : `[Errno 21] Is a directory` = ancien montage créé par Docker. `docker compose down`, `sudo rm -rf secrets/minigame_ssh_key`,
+puis recopier la clé comme ci-dessus.
 
 ## Docker
 ```bash

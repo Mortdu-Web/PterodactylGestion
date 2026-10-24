@@ -22,6 +22,7 @@ Variables attendues dans le .env / config.py :
 """
 
 import json
+import os
 import shlex
 import time
 
@@ -48,6 +49,16 @@ class RemoteMinigameService:
     # Connexion
     # ------------------------------------------------------------------ #
     def _connect(self) -> paramiko.SSHClient:
+        # Vérification explicite : si le fichier n'existait pas sur l'hôte au démarrage de Docker,
+        # Docker crée un DOSSIER à sa place (erreur paramiko « [Errno 21] Is a directory »).
+        if not os.path.isfile(self.key_path):
+            if os.path.isdir(self.key_path):
+                detail = "est un dossier (le fichier n'existait pas sur l'hôte au démarrage de Docker)"
+            else:
+                detail = "est introuvable"
+            raise RemoteMinigameServiceError(
+                f"Clé SSH {self.key_path} {detail}. Voir « Module minijeux » dans le README."
+            )
         client = paramiko.SSHClient()
         # À affiner si tu veux vérifier l'empreinte de la VM plutôt que
         # l'accepter automatiquement (recommandé en prod : load_host_keys).
