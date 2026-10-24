@@ -17,7 +17,7 @@ from pathlib import Path
 from flask import Response, jsonify, render_template, request, stream_with_context
 
 from app.config import Config
-from app.helpers import make_blueprint, require_auth
+from app.helpers import make_blueprint, require_access
 from app.pterodactyl import PterodactylClientWrapper
 
 from .backend.RemoteMinigameService import RemoteMinigameService, RemoteMinigameServiceError
@@ -92,13 +92,13 @@ def _wait_for_state(target_state: str, timeout: int):
 
 
 @bp.route("/")
-@require_auth("admin", "ServersUses-Access")
+@require_access()
 def page():
     return render_template(bp.get_templates_path("minigames.html"))
 
 
 @bp.route("/api/liste")
-@require_auth("admin", "ServersUses-Access")
+@require_access()
 def api_liste_minijeux():
     service = RemoteMinigameService()
     try:
@@ -110,7 +110,7 @@ def api_liste_minijeux():
 
 
 @bp.route("/api/switch", methods=["POST"])
-@require_auth("admin", "ServersUses-Access")
+@require_access()
 def api_switch_minijeu():
     payload = request.get_json(silent=True) or {}
     game_name = (payload.get("name") or "").strip()

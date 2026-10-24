@@ -23,6 +23,7 @@ Variables attendues dans le .env / config.py :
 
 import json
 import shlex
+import time
 
 import paramiko
 
@@ -92,11 +93,11 @@ class RemoteMinigameService:
     # ------------------------------------------------------------------ #
     # Switch de minijeu (streaming de la sortie du script)
     # ------------------------------------------------------------------ #
-    def switch_game_stream(self, game_name: str):
+    def switch_game_stream(self, game_name: str, timeout: int = 600):
         """
         Générateur : yield des morceaux de texte au fur et à mesure que
-        switchCurrentGame.sh les affiche sur la VM distante.
-        Lève RemoteMinigameServiceError si le script se termine en erreur.
+        changeMap.sh les affiche sur la VM distante.
+        Lève RemoteMinigameServiceError si le script échoue ou dépasse `timeout` secondes.
         """
         client = self._connect()
         try:
@@ -104,18 +105,31 @@ class RemoteMinigameService:
             # dans le volume Pterodactyl. Le compte SSH dédié (minigame-deploy)
             # n'a le droit d'exécuter QUE ce script via une règle NOPASSWD dans
             # /etc/sudoers.d/ — voir INTEGRATION.md.
-            command = f"sudo {shlex.quote(self.script_path)} {shlex.quote(game_name)}"
+            # `sudo -n` : n'attend jamais de mot de passe. Si la règle sudoers ne
+            # correspond pas, la commande échoue tout de suite au lieu de bloquer.
+            command = f"sudo -n {shlex.quote(self.script_path)} {shlex.quote(game_name)}"
             stdin, stdout, _stderr = client.exec_command(command, get_pty=True)
             stdin.close()
 
             channel = stdout.channel
+            deadline = time.monotonic() + timeout
             while True:
                 if channel.recv_ready():
-                    chunk = channel.recv(4096).decode("utf-8", errors="replace")
+                    chunk = channel.recv(4096)
                     if chunk:
-                        yield chunk
-                elif channel.exit_status_ready():
+                        yield chunk.decode("utf-8", errors="replace")
+                    continue
+                if channel.exit_status_ready() or channel.closed:
+                    # Vider ce qu'il reste dans le tampon (résumé final du script)
+                    while channel.recv_ready():
+                        yield channel.recv(4096).decode("utf-8", errors="replace")
                     break
+                if time.monotonic() > deadline:
+                    channel.close()
+                    raise RemoteMinigameServiceError(
+                        f"Le script n'a pas terminé après {timeout}s, il a été interrompu"
+                    )
+                time.sleep(0.1)
 
             exit_status = channel.recv_exit_status()
             if exit_status != 0:

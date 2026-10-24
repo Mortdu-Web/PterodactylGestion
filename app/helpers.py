@@ -23,6 +23,11 @@ else:
         return decorator
 
 
+def require_access():
+    """Accès aux modules : rôles listés dans AUTH_REQUIRED_ROLES (un seul suffit).
+    Liste vide = tout utilisateur authentifié. Sans effet si AUTH_ENABLED=false."""
+    return require_auth(*Config.AUTH_REQUIRED_ROLES)
+
 
 def api_route(f):
     """Décorateur : transforme les exceptions (Pterodactyl, réseau...) en réponses JSON propres."""
